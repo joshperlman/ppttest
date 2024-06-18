@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Upload PowerPoint</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div>
+        <h1>Upload PowerPoint</h1>
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <div>
+                <input type="file" id="fileInput" name="document" accept=".pptx">
+            </div>
+            <div>
+                <label for="folder_id">Google Drive Folder ID:</label>
+                <input type="text" id="folder_id" name="folder_id" required>
+            </div>
+            <div>
+                <button type="submit">Upload</button>
+            </div>
+        </form>
+        <div id="message"></div>
+        <div id="fonts"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+            .then(data => {
+                document.getElementById('message').innerText = data.message;
+                let fontsDiv = document.getElementById('fonts');
+                fontsDiv.innerHTML = "<h2>Fonts Used:</h2>";
+                data.fonts.forEach(font => {
+                    let p = document.createElement('p');
+                    p.innerText = font;
+                    fontsDiv.appendChild(p);
+                });
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
+
